@@ -61,14 +61,19 @@ def _need_ipaddress(func):
 
 
 def _is_subnet_of(network_a, network_b):
+    """
+    Return True if network_a is a subnet of network_b (same logic as ipaddress).
+    Uses the public .version attribute for compatibility with Python 3.14+ where
+    the private _version was removed (see bpo-118710 / cpython@c530ce1).
+    """
     try:
-        if network_a._version != network_b._version:
+        if network_a.version != network_b.version:
             return False
         return (
             network_b.network_address <= network_a.network_address
             and network_b.broadcast_address >= network_a.broadcast_address
         )
-    except Exception:
+    except (AttributeError, TypeError):
         return False
 
 
